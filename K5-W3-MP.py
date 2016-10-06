@@ -2,7 +2,7 @@
 """
 Created on Thu Oct 06 22:32:26 2016
 
-@author: User
+@author: McSim
 """
 
 import csv
