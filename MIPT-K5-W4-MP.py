@@ -69,10 +69,10 @@ AveragePrecision_1_by_views = np.mean([len(np.intersect1d(df_train.buys.values[i
 AveragePrecision_5_by_views = np.mean([len(np.intersect1d(df_train.buys.values[i], df_train.recomendations_by_views.values[i][:5]))/5.0 for i in range(len(df_train))])
 
 AverageRecall_1_by_views = np.mean([len(np.intersect1d(df_train.buys.values[i], 
-                                                       df_train.recomendations_by_views.values[i][0]))/len(df_train.buys.values[i])
+                                                       df_train.recomendations_by_views.values[i][0]))/float(len(df_train.buys.values[i]))
                                                              for i in range(len(df_train))])
 AverageRecall_5_by_views = np.mean([len(np.intersect1d(df_train.buys.values[i], 
-                                                       df_train.recomendations_by_views.values[i][:5]))//len(df_train.buys.values[i])
+                                                       df_train.recomendations_by_views.values[i][:5]))/float(len(df_train.buys.values[i]))
                                                              for i in range(len(df_train))])
 
 df_freq.sort_values('buys', ascending=False, inplace=True)
@@ -87,12 +87,12 @@ df_train['recomendations_by_buys'] = pd.Series(A, index=df_train.index)
 del(A, df_x, x, y)
 
 AveragePrecision_1_by_buys = np.mean([len(np.intersect1d(df_train.buys.values[i], df_train.recomendations_by_buys.values[i][0])) for i in range(len(df_train))])
-AveragePrecision_5_by_buys = np.mean([len(np.intersect1d(df_train.buys.values[i], df_train.recomendations_by_buys.values[i][0]))/5.0 for i in range(len(df_train))])
+AveragePrecision_5_by_buys = np.mean([len(np.intersect1d(df_train.buys.values[i], df_train.recomendations_by_buys.values[i][:5]))/5.0 for i in range(len(df_train))])
 AverageRecall_1_by_buys = np.mean([len(np.intersect1d(df_train.buys.values[i], 
-                                                       df_train.recomendations_by_buys.values[i][0]))/len(df_train.buys.values[i])
+                                                       df_train.recomendations_by_buys.values[i][0]))/float(len(df_train.buys.values[i]))
                                                              for i in range(len(df_train))])
 AverageRecall_5_by_buys = np.mean([len(np.intersect1d(df_train.buys.values[i], 
-                                                       df_train.recomendations_by_buys.values[i][:5]))//len(df_train.buys.values[i])
+                                                       df_train.recomendations_by_buys.values[i][:5]))/float(len(df_train.buys.values[i]))
                                                              for i in range(len(df_train))])
 
 del(i)
@@ -129,9 +129,9 @@ del(test_views, test_buys)
 df_freq.sort_values('views', ascending=False, inplace=True)
 A = []
 for x in df_test.views:
-    df_x = pd.DataFrame(np.unique(x), columns=["id"])
-    df_x.loc[:,'order'] = list(range(len(np.unique(x))))
-    df_x.loc[:,'freq'] = [df_freq.views[y] if y in df_freq.index else 0 for y in np.unique(x)]
+    df_x = pd.DataFrame(x, columns=["id"])
+    df_x.loc[:,'order'] = list(range(len(x)))
+    df_x.loc[:,'freq'] = [df_freq.views[y] if y in df_freq.index else 0 for y in x]
     df_x.sort_values(['freq', 'order'], ascending=[False,True], inplace=True)
     A.append(list(df_x.id.values))
 df_test['recomendations_by_views'] = pd.Series(A, index=df_test.index)
@@ -141,30 +141,30 @@ AveragePrecision_1_by_views = np.mean([len(np.intersect1d(df_test.buys.values[i]
 AveragePrecision_5_by_views = np.mean([len(np.intersect1d(df_test.buys.values[i], df_test.recomendations_by_views.values[i][:5]))/5.0 for i in range(len(df_test))])
 
 AverageRecall_1_by_views = np.mean([len(np.intersect1d(df_test.buys.values[i], 
-                                                       df_test.recomendations_by_views.values[i][0]))/len(df_test.buys.values[i])
+                                                       df_test.recomendations_by_views.values[i][0]))/float(len(df_test.buys.values[i]))
                                                              for i in range(len(df_test))])
 AverageRecall_5_by_views = np.mean([len(np.intersect1d(df_test.buys.values[i], 
-                                                       df_test.recomendations_by_views.values[i][:5]))//len(df_test.buys.values[i])
+                                                       df_test.recomendations_by_views.values[i][:5]))/float(len(df_test.buys.values[i]))
                                                              for i in range(len(df_test))])
 
 df_freq.sort_values('buys', ascending=False, inplace=True)
 A = []
 for x in df_test.views:
-    df_x = pd.DataFrame(np.unique(x), columns=["id"])
-    df_x.loc[:,'order'] = list(range(len(np.unique(x))))
-    df_x.loc[:,'freq'] = [df_freq.buys[y] if y in df_freq.index else 0 for y in np.unique(x)]
+    df_x = pd.DataFrame(x, columns=["id"])
+    df_x.loc[:,'order'] = list(range(len(x)))
+    df_x.loc[:,'freq'] = [df_freq.buys[y] if (y in df_freq.index) and (y !=np.nan) else 0 for y in x]
     df_x.sort_values(['freq', 'order'], ascending=[False,True], inplace=True)
     A.append(list(df_x.id.values))
 df_test['recomendations_by_buys'] = pd.Series(A, index=df_test.index)
 del(A, df_x, x, y)
 
 AveragePrecision_1_by_buys = np.mean([len(np.intersect1d(df_test.buys.values[i], df_test.recomendations_by_buys.values[i][0])) for i in range(len(df_test))])
-AveragePrecision_5_by_buys = np.mean([len(np.intersect1d(df_test.buys.values[i], df_test.recomendations_by_buys.values[i][0]))/5.0 for i in range(len(df_test))])
+AveragePrecision_5_by_buys = np.mean([len(np.intersect1d(df_test.buys.values[i], df_test.recomendations_by_buys.values[i][:5]))/5.0 for i in range(len(df_test))])
 AverageRecall_1_by_buys = np.mean([len(np.intersect1d(df_test.buys.values[i], 
-                                                       df_test.recomendations_by_buys.values[i][0]))/len(df_test.buys.values[i])
+                                                       df_test.recomendations_by_buys.values[i][0]))/float(len(df_test.buys.values[i]))
                                                              for i in range(len(df_test))])
 AverageRecall_5_by_buys = np.mean([len(np.intersect1d(df_test.buys.values[i], 
-                                                       df_test.recomendations_by_buys.values[i][:5]))//len(df_test.buys.values[i])
+                                                       df_test.recomendations_by_buys.values[i][:5]))/float(len(df_test.buys.values[i]))
                                                              for i in range(len(df_test))])
 del(i)
 
